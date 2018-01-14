@@ -18,7 +18,7 @@ pipeline {
  }
  stage('run') {
  steps {
- sh 'java -jar rectangle.jar 9 9'
+ sh 'java -jar rectangle.jar 4 5'
  }
  }
  stage('Promote develop to preprod') {
@@ -44,7 +44,7 @@ pipeline {
  subject: "${env.JOB_NAME} [${env.BUILD_NUMBER}] developPromoted to preprod",
  body: """<p>'${env.JOB_NAME} [${env.BUILD_NUMBER}]' develop Promoted to preprod":</p> 
     <p> Check console output at <a href='${env.BUILD_URL}'  > ${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",  
-	to: "us2000_99@yahoo.com"
+	to: "workme20171@gmail.com"
  )
  }
  }
@@ -63,7 +63,7 @@ pipeline {
  subject: "${env.JOB_NAME} [${env.BUILD_NUMBER}] NEW RELEASE",
  body: """<p>'${env.JOB_NAME} [${env.BUILD_NUMBER}]' NEW RELEASE":</p>
  <p>Check console output at <a href='${env.BUILD_URL}'> ${env.JOB_NAME} [${env.BUILD_NUMBER}] </a> </p>""",
- to: "us2000_99@yahoo.com"
+ to: "workme20171@gmail.com"
  )
  }
  }
