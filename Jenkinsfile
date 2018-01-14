@@ -18,7 +18,7 @@ pipeline {
  }
  stage('run') {
  steps {
- sh 'java -jar rectangle.jar 4 5'
+ sh 'java -jar rectangle.jar 1 5'
  }
  }
  stage('Promote develop to preprod') {
