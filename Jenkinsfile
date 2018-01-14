@@ -1,7 +1,7 @@
 pipeline {
  agent any
  environment {
- MAJOR_VERSION = 2
+ MAJOR_VERSION = 5
  }
  stages {
  stage('build') {
@@ -18,7 +18,7 @@ pipeline {
  }
  stage('run') {
  steps {
- sh 'java -jar rectangle.jar 8 8'
+ sh 'java -jar rectangle.jar 10 10'
  }
  }
  stage('Promote develop to preprod') {
@@ -26,17 +26,27 @@ pipeline {
  branch 'develop'
  }
  steps {
- echo 'Stashing Local Changes'
- sh 'git stash'
- echo 'Checking Out develop'
+ echo "Stashing Local Changes"
+ sh "git stash"
+ echo "Checking Out develop"
  sh 'git checkout develop'
  sh 'git pull origin'
  echo 'Checking Out preprod'
  sh 'git checkout preprod'
- echo 'Merging develop into preprod'
+ echo "Merging develop into preprod"
  sh 'git merge develop'
- echo 'Git Push to Origin'
+ echo "Git Push to Origin"
  sh 'git push origin preprod'
+ }
+ post {
+ success {
+ emailext(
+ subject: "${env.JOB_NAME} [${env.BUILD_NUMBER}] developPromoted to preprod",
+ body: """<p>'${env.JOB_NAME} [${env.BUILD_NUMBER}]' develop Promoted to preprod":</p> 
+    <p> Check console output at <a href='${env.BUILD_URL}'  > ${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",  
+	to: "us2000_99@yahoo.com"
+ )
+ }
  }
  }
  stage('Tagging the Release') {
@@ -44,8 +54,18 @@ pipeline {
  branch 'preprod'
  }
  steps {
- sh "git tag RECTANGLE-${env.MAJOR_VERSION}.${BUILD_NUMBER}"
- sh "git push origin RECTANGLE-${env.MAJOR_VERSION}.${BUILD_NUMBER}"
+ sh "git tag rectangle-${env.MAJOR_VERSION}.${BUILD_NUMBER}"
+ sh "git push origin rectangle-${env.MAJOR_VERSION}.${BUILD_NUMBER}"
+ }
+ post {
+ success {
+ emailext(
+ subject: "${env.JOB_NAME} [${env.BUILD_NUMBER}] NEW RELEASE",
+ body: """<p>'${env.JOB_NAME} [${env.BUILD_NUMBER}]' NEW RELEASE":</p>
+ <p>Check console output at <a href='${env.BUILD_URL}'> ${env.JOB_NAME} [${env.BUILD_NUMBER}] </a> </p>""",
+ to: "us2000_99@yahoo.com"
+ )
+ }
  }
  }
  }
